@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>HealthSync Dashboard</title>
+        <link rel="stylesheet" href="../css/dashboard.css">
+        <script src="https://unpkg.com/vue@3"></script>
+    </head>
+
+    <body>
+        <div id="dashboard-app">
+            <div class="sidebar">
+                <div class="logo-container">
+                    <img src="../img/logo.png" alt="HealthSync Logo" class="app-logo">
+                    <h2>HealthSync</h2>
+                </div>
+                <a href="#">Dashboard</a>
+                <a href="../html/fitness.html">Fitness</a>
+                <a href="../html/Reports.html">Reports</a>
+                <a href="../html/Events.html">Events</a>
+                <a href="#">Log out</a>
+            </div>
+
+            <div class="main-content">
+                <div class="dashboard-header">
+                    <h1>Hello, John!</h1>
+                    <p>
+                        Today is {{ currentDate }}.
+                        <hr>
+                        You have {{ exerciseCount }} workouts planned, and you need to do {{ stepGoal }} more steps to achieve your daily goal.
+                        You can do it!
+                    </p>
+                </div>
+
+                <div class="stats">
+                    <div class="card">
+                        <h2>Steps</h2>
+                        <p>Goal: {{ stepGoal }} steps</p>
+                    </div>
+
+                    <div class="card">
+                        <h2>Mood</h2>
+                        <p>Happy</p>
+                    </div>
+
+                    <div class="card">
+                        <h2>Calories Burnt</h2>
+                        <p>649 kcal / {{ calorieGoal }} kcal</p>
+                    </div>
+
+                    <div class="card">
+                        <h2>Sleep Tracking</h2>
+                        <p>REM Sleep: 22% | Deep Sleep: 52%</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="weather">
+                            <h2>Weather Alert</h2>
+
+                            <select v-model="selectedCity" @change="fetchWeather">
+                                <option disabled value="">Select a city</option>
+                                <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
+                            </select>
+
+                            <p v-if="weather">
+                                The weather in {{ weather.city }} is {{ weather.condition }} with a temperature of {{ weather.temperature }}°C.
+                                <br>
+                                <img v-if="weather.showWarning" src="../img/warning.png" alt="Warning" class="warning-icon">
+                                <span :class="{'alert-good': !weather.showWarning, 'alert-bad': weather.showWarning}">
+                                    <strong>{{ weather.message }}</strong>
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile">
+                <img src="../img/avatar.png" alt="User Avatar">
+                <h3>John</h3>
+                <p>Gender: Male, Age: 21</p>
+                <p>Height: 165 cm</p>
+                <p>Weight: 62 kg</p>
+                <p>Blood: O-</p>
+            
+                <div class="upcoming-events">
+                    <h2>Upcoming Events</h2>
+                    <ul>
+                        <li v-for="event in sortedEvents" :key="event.id" class="upcoming-event-item">
+                            <span class="event-name">{{ event.name }}</span>
+                            <span class="event-datetime">{{ event.date }} at {{ event.time }}</span>
+                            <span :class="event.importance.toLowerCase()" class="event-importance">{{ event.importance }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const { createApp } = Vue;
+
+            createApp({
+                data() {
+                    return {
+                        currentDate: '',
+
+                        // Fitness Data
+                        stepGoal: null,
+                        calorieGoal: null,
+                        exerciseCount: 0,
+
+                        // Weather Data
+                        selectedCity: '',
+                        weather: null,
+                        cities: [
+                            'London', 'Paris', 'New York', 'Tokyo', 'Sydney',
+                            'Berlin', 'Los Angeles', 'Madrid', 'Rome', 'Cape Town',
+                            'Moscow', 'Rio de Janeiro', 'Cairo', 'Dubai', 'Beijing',
+                            'Toronto', 'Buenos Aires', 'Mexico City', 'Jakarta', 'Bangkok'
+                        ],
+
+                        // Event Data
+                        events: [],
+                        newEvent: ''
+                    };
+                },
+
+                computed: {
+                    sortedEvents() {
+                        return this.events
+                            .map(event => ({
+                                ...event,
+                                dateTime: new Date(`${event.date} ${event.time}`), // Combine date and time for sorting
+                            }))
+                            .sort((a, b) => a.dateTime - b.dateTime) // Sort by dateTime
+                            .slice(0, 5); // Show the next 5 events
+                    },
+                },
+
+
+                methods: {
+                    getCurrentDate() {
+                        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                        this.currentDate = new Date().toLocaleDateString('en-US', options);
+                    },
+
+                    loadFitnessData() {
+                        const savedData = localStorage.getItem('fitnessData');
+                        if (savedData) {
+                            const { stepGoal, calorieGoal, exercises  } = JSON.parse(savedData);
+                            this.stepGoal = stepGoal || 0;
+                            this.calorieGoal = calorieGoal || 0;
+                            this.exerciseCount = exercises ? exercises.length : 0;
+                        } else {
+                            this.exerciseCount = 0;
+                        }
+                    },
+
+                    async fetchWeather() {
+                        try {
+                            if (!this.selectedCity) return;
+                            const response = await fetch(`http://localhost:3002/weather/${this.selectedCity}`);
+                            if (!response.ok) throw new Error('City not found!');
+                            const data = await response.json();
+                            this.weather = data;
+                            this.generateWeatherMessage();
+                        } catch (error) {
+                            console.error('Error fetching weather:', error);
+                            this.weather = null;
+                            alert('Unable to fetch weather data. Please try again later.');
+                        }
+                    },
+
+                    generateWeatherMessage() {
+                        const temp = this.weather.temperature;
+                        this.weather.showWarning = temp >= 30 || temp <= 5;
+                        this.weather.message = temp >= 30
+                            ? "It's too hot! Stay hydrated."
+                            : temp <= 5
+                                ? "It's very cold! Cover yourself."
+                                : temp >= 20
+                                    ? "It's warm and nice outside!"
+                                    : "Weather looks moderate. Enjoy your day!";
+                    },
+
+                    async fetchEvents() {
+                        try {
+                            const response = await fetch('http://localhost:3000/events'); // API endpoint
+                            if (!response.ok) throw new Error('Failed to fetch events');
+                            this.events = await response.json();
+                        } catch (error) {
+                            console.error('Error fetching events:', error);
+                        }
+                    },
+
+                    async addEvent() {
+                        const event = { 
+                            name: this.newEvent.name, 
+                            date: this.newEvent.date, 
+                            time: this.newEvent.time, 
+                            importance: this.newEvent.importance, 
+                            description: this.newEvent.description 
+                        };
+
+                        try {
+                            const response = await fetch('http://localhost:3000/events', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(event),
+                            });
+                            if (!response.ok) throw new Error('Failed to add event');
+                            const data = await response.json();
+                            this.events = data.events;
+                            this.newEvent = { name: '', date: '', time: '', importance: '', description: '' }; // Reset form
+                        } catch (error) {
+                            console.error('Error adding event:', error);
+                        }
+                    },
+
+                    async removeEvent(index) {
+                        try {
+                            const response = await fetch(`http://localhost:3000/events/${index}`, { method: 'DELETE' });
+                            if (!response.ok) throw new Error('Failed to delete event');
+                            const data = await response.json();
+                            this.events = data.events;
+                        } catch (error) {
+                            console.error('Error deleting event:', error);
+                        }
+                    }
+                },
+
+                mounted() {
+                    this.loadFitnessData();
+                    this.getCurrentDate();
+                    this.fetchEvents();
+                }
+            }).mount('#dashboard-app');
+        </script>
+    </body>
+</html>

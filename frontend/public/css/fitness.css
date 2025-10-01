@@ -1,0 +1,199 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    background-color: #f4f4f4;
+    height: 100vh;
+}
+
+#fitness-app {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #333;
+    color: #fff;
+    height: 100vh;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+.sidebar a {
+    color: #fff;
+    text-decoration: none;
+    margin: 10px 0;
+}
+
+.sidebar a:hover {
+    text-decoration: underline;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.app-logo {
+    width: 40px;
+    height: 40px;
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 2;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    min-width: 0;
+}
+
+.fitness-header {
+    background-color: #e0ffe0;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.fitness-header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.fitness-header p {
+    margin: 5px 0 0;
+    font-size: 16px;
+    color: #555;
+}
+
+/* Stats Section with Cards */
+.stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+}
+
+/* Input Fields and Buttons */
+input, select {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: rgb(50, 175, 50);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+button:hover {
+    background-color: rgb(40, 150, 40);
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: auto;
+}
+
+/* Exercise List */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+.exercise-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #e9ecef;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.remove-button {
+    padding: 5px 10px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.remove-button:hover {
+    background-color: darkred;
+}
+
+/* Profile Bar */
+.profile {
+    width: 300px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.profile img {
+    width: 100%;
+    border-radius: 50%;
+}
+
+.profile h3 {
+    margin: 10px 0 0;
+    font-size: 18px;
+    text-align: center;
+}
+
+.upcoming-events {
+    margin-top: 20px;
+}
+
+.upcoming-events ul {
+    list-style: none;
+    padding: 0;
+}
+
+.upcoming-events ul li {
+    background-color: #e8f4ff;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+}

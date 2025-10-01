@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>HealthSync - Fitness</title>
+        <link rel="stylesheet" href="../css/fitness.css">
+        <script src="https://unpkg.com/vue@3"></script>
+    </head>
+
+    <body>
+        <div id="fitness-app">
+            <div class="sidebar">
+                <div class="logo-container">
+                    <img src="../img/logo.png" alt="HealthSync Logo" class="app-logo">
+                    <h2>HealthSync</h2>
+                </div>
+                <a href="../html/Dashboard.html">Dashboard</a>
+                <a href="#">Fitness</a>
+                <a href="../html/Reports.html">Reports</a>
+                <a href="../html/Events.html">Events</a>
+                <a href="#">Log out</a>
+            </div>
+
+            <div class="main-content">
+                <div class="fitness-header">
+                    <h1>Fitness Tracker</h1>
+                    <p>Track your exercises, steps, and calorie goals here!</p>
+                </div>
+
+                <main class="stats">
+                    <div class="card">
+                        <h2>Add Exercise</h2>
+                        <input v-model="newExercise.name" placeholder="Exercise Name">
+                        <input type="number" v-model="newExercise.duration" placeholder="Duration (minutes)">
+                        <select v-model="newExercise.intensity">
+                            <option disabled value="">Select Intensity</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                        <div class="button-container">
+                            <button @click="addExercise">Add Exercise</button>
+                        </div>
+                    </div>
+                
+                    <div class="card">
+                        <h2>Set Step Goal</h2>
+                        <input type="number" v-model="stepGoal" placeholder="Step Goal">
+                        <div class="button-container">
+                            <button @click="saveStepGoal">Save Step Goal</button>
+                        </div>
+                    </div>
+                
+                    <div class="card">
+                        <h2>Set Calorie Goal</h2>
+                        <input type="number" v-model="calorieGoal" placeholder="Calorie Goal">
+                        <div class="button-container">
+                            <button @click="saveCalorieGoal">Save Calorie Goal</button>
+                        </div>
+                    </div>
+                
+                    <div class="card">
+                        <h2>Exercises</h2>
+                        <ul>
+                            <li v-for="(exercise, index) in exercises" :key="index" class="exercise-item">
+                                <span>{{ exercise.name }} - {{ exercise.duration }} minutes ({{ exercise.intensity }})</span>
+                                <button class="remove-button" @click="removeExercise(index)">Remove</button>
+                            </li>
+                        </ul>
+                    </div>
+                </main>                
+            </div>
+
+            <div class="profile">
+                <img src="../img/avatar.png" alt="User Avatar">
+                <h3>John</h3>
+                <p>Gender: Male, Age: 21</p>
+                <p>Height: 165 cm</p>
+                <p>Weight: 62 kg</p>
+                <p>Blood: O-</p>
+            </div>
+        </div>
+
+        <script>
+            const { createApp } = Vue;
+        
+            createApp({
+                data() {
+                    return {
+                        newExercise: {
+                            name: '',
+                            duration: null,
+                            intensity: '',
+                        },
+                        exercises: [],
+                        stepGoal: null,
+                        calorieGoal: null,
+                    };
+                },
+                
+                methods: {
+                    addExercise() {
+                        if (!this.newExercise.name || !this.newExercise.duration || !this.newExercise.intensity) {
+                            alert('Please fill in all fields.');
+                            return;
+                        }
+                        this.exercises.push({ ...this.newExercise });
+                        this.newExercise = { name: '', duration: null, intensity: '' };
+                        this.saveData();
+                    },
+
+                    saveStepGoal() {
+                        if (!this.stepGoal) {
+                            alert('Please set a valid step goal.');
+                            return;
+                        }
+                        alert(`Step goal set to ${this.stepGoal} steps!`);
+                        this.saveData();
+                    },
+
+                    saveCalorieGoal() {
+                        if (!this.calorieGoal) {
+                            alert('Please set a valid calorie goal.');
+                            return;
+                        }
+                        alert(`Calorie goal set to ${this.calorieGoal} calories!`);
+                        this.saveData();
+                    },
+
+                    saveData() {
+                        const fitnessData = {
+                            exercises: this.exercises,
+                            stepGoal: this.stepGoal,
+                            calorieGoal: this.calorieGoal,
+                        };
+                        localStorage.setItem('fitnessData', JSON.stringify(fitnessData));
+                    },
+
+                    loadData() {
+                        const savedData = localStorage.getItem('fitnessData');
+                        if (savedData) {
+                            const { exercises, stepGoal, calorieGoal } = JSON.parse(savedData);
+                            this.exercises = exercises || [];
+                            this.stepGoal = stepGoal || null;
+                            this.calorieGoal = calorieGoal || null;
+                        }
+                    },
+
+                    removeExercise(index) {
+                        this.exercises.splice(index, 1);
+                        this.saveData();
+                    },
+                },
+
+                mounted() {
+                    this.loadData();
+                },
+            }).mount('#fitness-app');
+        </script>        
+    </body>
+</html>

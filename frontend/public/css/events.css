@@ -1,0 +1,286 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    background-color: #f4f4f4;
+    height: 100vh;
+}
+
+#events-app {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #333;
+    color: #fff;
+    height: 100vh;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.sidebar a {
+    color: #fff;
+    text-decoration: none;
+    margin: 10px 0;
+}
+
+.sidebar a:hover {
+    text-decoration: underline;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.app-logo {
+    width: 40px;
+    height: 40px;
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 2;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.events-header {
+    background-color: #e0ffe0;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.events-header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.events-header p {
+    margin: 5px 0 0;
+    font-size: 16px;
+    color: #555;
+}
+
+/* Cards */
+.card {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card h2 {
+    margin-top: 0;
+    font-size: 20px;
+}
+
+/* Form Fields */
+input, select, textarea {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+textarea {
+    height: 100px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: rgb(50, 175, 50);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: rgb(40, 150, 40);
+}
+
+.event-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+/* Calendar */
+.calendar-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+}
+
+.calendar-day {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    position: relative;
+}
+
+.calendar-day.hasEvent {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.calendar-day.selected {
+    background-color: #007bff;
+    color: white;
+    border-color: #0056b3;
+}
+
+.event-marker {
+    width: 8px;
+    height: 8px;
+    background-color: #28a745;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Event List */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+.event-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-color: #e9ecef;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.event-item div {
+    flex-grow: 1;
+}
+
+.event-item strong {
+    font-size: 16px;
+}
+
+.event-item p {
+    margin: 5px 0 0;
+    color: #555;
+}
+
+.event-item span {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.low {
+    color: green;
+}
+
+.medium {
+    color: orange;
+}
+
+.high {
+    color: red;
+}
+
+.remove-button {
+    padding: 5px 10px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.remove-button:hover {
+    background-color: darkred;
+}
+
+/* Profile Bar */
+.profile {
+    width: 300px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.profile img {
+    width: 100%;
+    border-radius: 50%;
+}
+
+.profile h3 {
+    margin: 10px 0 0;
+    font-size: 18px;
+    text-align: center;
+}
+
+.upcoming-events {
+    margin-top: 20px;
+    text-align: left;
+}
+
+.upcoming-events ul {
+    list-style: none;
+    padding: 0;
+}
+
+.upcoming-events ul li {
+    background-color: #e8f4ff;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+}

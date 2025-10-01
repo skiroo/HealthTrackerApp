@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthSync Reports</title>
+    <link rel="stylesheet" href="../css/reports.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-container">
+                <img src="../img/logo.png" alt="HealthSync Logo" class="app-logo">
+                <h2>HealthSync</h2>
+            </div>
+            <a href="../html/Dashboard.html">Dashboard</a>
+            <a href="../html/Fitness.html">Fitness</a>
+            <a href="#">Reports</a>
+            <a href="../html/Events.html">Events</a>
+            <a href="#">Log out</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div id="report-app">
+                <header class="reports-header">
+                    <h1>Reports</h1>
+                </header>
+
+                <main>
+                    <!-- Input Section -->
+                    <section>
+                        <h2>Add Today's Data</h2>
+                        <div class="data-entry-cards">
+                            <!-- Date Card -->
+                            <div class="card">
+                                <label for="date">Date:</label>
+                                <input type="date" id="date" v-model="newData.date" :value="todayDate" required>
+                            </div>
+                    
+                            <!-- Weight Card -->
+                            <div class="card">
+                                <label for="weight">Weight (kg):</label>
+                                <input type="number" id="weight" v-model="newData.weight" step="0.1" required>
+                            </div>
+                    
+                            <!-- Calories Burned Card -->
+                            <div class="card">
+                                <label for="calories">Calories Burned:</label>
+                                <input type="number" id="calories" v-model="newData.calories" required>
+                            </div>
+                        </div>
+                    
+                        <div class="button-container">
+                            <button type="submit" @click="addData">Add Data</button>
+                        </div>
+                    </section>
+                    
+
+                    <!-- Charts Section -->
+                    <section>
+                        <h2>Weight Progress</h2>
+                        <canvas id="weightChart"></canvas>
+                    </section>
+
+                    <section>
+                        <h2>Calories Burned</h2>
+                        <canvas id="calorieChart"></canvas>
+                    </section>
+                </main>
+            </div>
+        </div>
+
+        <!-- Profile Bar -->
+        <div class="profile">
+            <img src="../img/avatar.png" alt="User Avatar">
+            <h3>John</h3>
+            <p>Gender: Male, Age: 21</p>
+            <p>Height: 165 cm</p>
+            <p>Weight: 62 kg</p>
+            <p>Blood: O-</p>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                const today = new Date();
+                const todayDate = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
+                
+                return {
+                    todayDate,
+                    weightData: [],
+                    calorieData: [],
+                    newData: {
+                        date: todayDate,
+                        weight: null,
+                        calories: null,
+                    },
+
+                    weightChart: null,
+                    calorieChart: null,
+                };
+            },
+
+            methods: {
+                async fetchWeightData() {
+                    const response = await fetch('http://localhost:3003/reports/weight-progress');
+                    this.weightData = await response.json();
+                    this.renderWeightChart();
+                },
+
+                async fetchCalorieData() {
+                    const response = await fetch('http://localhost:3003/reports/calories-burned');
+                    this.calorieData = await response.json();
+                    this.renderCalorieChart();
+                },
+
+                async addData() {
+                    if (this.newData.date && this.newData.weight && this.newData.calories) {
+                        // Add weight data
+                        await fetch('http://localhost:3003/reports/weight-progress', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ date: this.newData.date, weight: this.newData.weight }),
+                        });
+
+                        // Add calorie data
+                        await fetch('http://localhost:3003/reports/calories-burned', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ date: this.newData.date, calories: this.newData.calories }),
+                        });
+
+                        // Update local data
+                        this.weightData.push({ date: this.newData.date, weight: this.newData.weight });
+                        this.calorieData.push({ date: this.newData.date, calories: this.newData.calories });
+
+                        // Re-render charts
+                        this.renderWeightChart();
+                        this.renderCalorieChart();
+
+                        // Clear input fields but keep today's date
+                        this.newData = { date: this.todayDate, weight: null, calories: null };
+                    }
+                },
+
+                renderWeightChart() {
+                    const ctx = document.getElementById('weightChart').getContext('2d');
+                    if (this.weightChart) this.weightChart.destroy(); // Destroy existing chart
+                    this.weightChart = new Chart(ctx, {
+                        type: 'line',
+
+                        data: {
+                            labels: this.weightData.map(item => item.date),
+                            datasets: [{
+                                label: 'Weight (kg)',
+                                data: this.weightData.map(item => item.weight),
+                                borderColor: 'blue',
+                                tension: 0.1,
+                            }],
+                        },
+
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                },
+                            },
+                        },
+                    });
+                },
+
+                renderCalorieChart() {
+                    const ctx = document.getElementById('calorieChart').getContext('2d');
+                    if (this.calorieChart) this.calorieChart.destroy(); // Destroy existing chart
+                    this.calorieChart = new Chart(ctx, {
+                        type: 'bar',
+
+                        data: {
+                            labels: this.calorieData.map(item => item.date),
+                            datasets: [{
+                                label: 'Calories Burned',
+                                data: this.calorieData.map(item => item.calories),
+                                backgroundColor: 'orange',
+                            }],
+                        },
+
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                },
+                            },
+                        },
+                    });
+                },
+            },
+
+            mounted() {
+                this.fetchWeightData();
+                this.fetchCalorieData();
+            },
+        }).mount('#report-app');
+    </script>
+</body>
+</html>
